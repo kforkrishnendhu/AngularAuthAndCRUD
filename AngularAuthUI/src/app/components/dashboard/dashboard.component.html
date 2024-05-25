@@ -6,23 +6,52 @@
       </div>
     </div>
   </nav>
-  <table class="table">
-    <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">First Name</th>
-          <th scope="col">Last Name</th>
-          <th scope="col">Email</th>
-          <th scope="col">Username</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users; let i = index">
-          <th scope="row">{{ i + 1 }}</th>
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.userName }}</td>
-        </tr>
-      </tbody>
-  </table>
+
+  <ng-container *ngIf="role === 'Admin'"> 
+    <table class="table">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Username</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users; let i = index">
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ user.firstName }}</td>
+              <td>{{ user.lastName }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.userName }}</td>
+            </tr>
+          </tbody>
+      </table>
+  </ng-container>
+  <ng-container *ngIf="role==='User'">
+    <div>
+        Welcome {{fullName}}!!!
+        <div *ngIf="user" class="user-card">
+          <div class="card-header">
+            <img [src]="user.profileImageUrl || 'default-profile.png'" alt="User Profile Image" class="profile-image">
+            <h2>{{ user.userName }}</h2>
+          </div>
+          <div class="card-body">
+            <p><strong>FirstName:</strong> {{ user.firstName }}</p>
+            <p><strong>LastName:</strong> {{ user.lastName }}</p>
+            <p><strong>Username:</strong> {{ user.userName }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Role:</strong> {{ user.role }}</p>
+            <input type="file" (change)="onFileSelected($event)">
+            <!-- Add other fields as needed -->
+          </div>
+        </div>
+        <div *ngIf="!user">
+          <p>Loading user data...</p>
+        </div>
+    </div>
+  </ng-container>
+  
+
+ 
