@@ -4,19 +4,24 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { UserStoreService } from '../../services/user-store.service';
 import { Observable } from 'rxjs';
+import { EditUserComponent } from "../edit-user/edit-user.component";
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+    selector: 'app-dashboard',
+    standalone: true,
+    templateUrl: './dashboard.component.html',
+    styleUrl: './dashboard.component.scss',
+    imports: [CommonModule, EditUserComponent]
 })
 export class DashboardComponent implements OnInit {
+
   public users: any = [];
   public fullName: string = "";
   public role: string = "";
   public user:any;
+  public ModalTitle = "";
+  public emp: any;
+  ActivateAddEditComp: boolean = false;
 
   constructor(
     private auth: AuthService,
@@ -47,6 +52,32 @@ export class DashboardComponent implements OnInit {
         console.log(this.user);
       });
 
+  }
+
+  editClick(item: any) {
+    this.emp = item;
+    this.ModalTitle = "Edit Employee";
+    this.ActivateAddEditComp = true;
+  }
+
+  deleteClick(item: any) {
+    if (confirm('Are you sure? you want to delete?')) {
+      this.api.deleteUser(item.id).subscribe({
+        next:(res:any)=>
+        alert(res.message.toString())
+      });
+    }
+    this.refreshList();
+  }
+  closeClick() {
+    this.ActivateAddEditComp = false;
+    this.refreshList();
+  }
+
+  refreshList() {
+    this.api.getUsers().subscribe(res => {
+      this.users = res;
+    });
   }
 
   onFileSelected(event: any): void {

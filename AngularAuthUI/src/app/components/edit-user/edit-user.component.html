@@ -1,0 +1,29 @@
+<div class="d-flex flex-row bd-highlight mb-3">
+    <div class="p-2 w-50 bd-highlight">
+      <div class="input-group mb-3">
+        <span class="input-group-text">FirstName</span>
+        <input type="text" class="form-control" [(ngModel)]="FirstName">
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">LastName</span>
+        <input type="text" class="form-control" [(ngModel)]="LastName">
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">UserName</span>
+        <input type="text" class="form-control" [(ngModel)]="UserName">
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Email</span>
+        <input type="text" class="form-control" [(ngModel)]="Email">
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Password</span>
+        <input type="text" class="form-control" [(ngModel)]="Password">
+      </div>
+      
+    </div>
+  </div>
+  
+  <button type="button" (click)="updateUser()" class="btn btn-primary">
+    Update
+  </button>

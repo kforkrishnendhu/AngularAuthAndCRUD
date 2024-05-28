@@ -23,7 +23,17 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}user`, { params });
   }
 
+  updateUser(id: number,userObj: any) {
+    return this.http.put(`${this.baseUrl}UpdateUser/${id}`, userObj)
+  }
+
+  deleteUser(id: any) {
+    console.log(id+"check id");
+    return this.http.delete(`${this.baseUrl}DeleteUser/${id}`)
+  }
+
   uploadImage(formData:FormData){
     return this.http.post<any>(`${this.baseUrl}upload`, formData)
   }
+
 }
