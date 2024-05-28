@@ -19,7 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace AngularAuthAPI.Controllers
+namespace AuthAPI.Controllers
 {
     [Route("api/[controller]")]
     public class UserController : Controller
@@ -190,7 +190,7 @@ namespace AngularAuthAPI.Controllers
         [HttpGet("user")]
         public async Task<ActionResult<User>> GetUser(string username)
         {
-            return Ok(await _context.Users.FirstOrDefaultAsync(u => u.UserName == username && u.Role == "User"));
+            return Ok(await _context.Users.FirstOrDefaultAsync(u => u.UserName == username));
         }
 
 
@@ -215,6 +215,70 @@ namespace AngularAuthAPI.Controllers
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
             });
+        }
+
+        [HttpGet("userById")]
+        public async Task<ActionResult<User>> GetUserById(int id)
+        {
+            return Ok(await _context.Users.FirstOrDefaultAsync(u => u.Id == id));
+        }
+
+        [HttpPut("UpdateUser/{id}")]
+        public async Task<ActionResult> UpdateUser(int id, [FromBody] User userObj)
+        {
+            if (userObj == null || id <= 0)
+                return BadRequest(new { Message = "Invalid user data" });
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+                return NotFound(new { Message = "User not found" });
+
+            // Update user fields
+            user.UserName = userObj.UserName;
+            user.Email = userObj.Email;
+
+            // If updating password, hash it
+            if (!string.IsNullOrEmpty(userObj.Password))
+            {
+                user.Password = PasswordHasher.HashPassword(userObj.Password);
+            }
+
+            // Additional fields to update
+            user.FirstName = userObj.FirstName;
+            user.LastName = userObj.LastName;
+
+            try
+            {
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                return Ok(new { Message = "User updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while updating the user", Details = ex.Message });
+            }
+        }
+
+        [HttpDelete("DeleteUser/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            if (id <= 0)
+                return BadRequest(new { Message = "Invalid user ID" });
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+                return NotFound(new { Message = "User not found" });
+
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return Ok(new { Message = "User deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while deleting the user", Details = ex.Message });
+            }
         }
 
     }
