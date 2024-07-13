@@ -1,7 +1,10 @@
 ﻿using System.Text;
 using AngularAuthAPI.Context;
+using AuthAPI.Interfaces;
+using AuthAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +46,8 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuer = false
     };
 });
+
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 var app = builder.Build();
 

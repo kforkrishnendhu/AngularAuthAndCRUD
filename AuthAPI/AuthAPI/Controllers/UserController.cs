@@ -11,13 +11,19 @@ using AngularAuthAPI.Context;
 using AngularAuthAPI.Helpers;
 using AngularAuthAPI.Models;
 using AngularAuthAPI.Models.Dto;
+using AuthAPI.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+//
+//Admin User
+//username: krishnendhuarun
+//password: Krishnendhu@123
 
 namespace AuthAPI.Controllers
 {
@@ -26,11 +32,13 @@ namespace AuthAPI.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IPhotoService _photoService;
 
-        public UserController(AppDbContext context, IWebHostEnvironment env)
+        public UserController(AppDbContext context, IWebHostEnvironment env, IPhotoService photoService)
         {
             _context = context;
             _env = env;
+            _photoService = photoService;
         }
 
         [HttpPost("authenticate")]
@@ -279,6 +287,17 @@ namespace AuthAPI.Controllers
             {
                 return StatusCode(500, new { Message = "An error occurred while deleting the user", Details = ex.Message });
             }
+        }
+
+        [HttpDelete("uploadphoto/{id}")]
+        public async Task<IActionResult> UploadPhoto(IFormFile file,int id)
+        {
+            var result = await _photoService.UploadPhotoAsync(file);
+            if(result.Error!=null)
+            {
+                return BadRequest(result.Error.Message);
+            }
+            return Ok(201);
         }
 
     }

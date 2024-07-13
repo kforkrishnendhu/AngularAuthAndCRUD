@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import ValidateForm from '../../helpers/validateform';
 import { AuthService } from '../../services/auth.service';
@@ -11,7 +11,7 @@ import { UserStoreService } from '../../services/user-store.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule, ReactiveFormsModule, CommonModule,HttpClientModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, HttpClientModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -24,11 +24,12 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-     private auth:AuthService, 
-     private router:Router,
-     private toast:NgToastService,
-     private userStore:UserStoreService
-     ){}
+    private auth: AuthService,
+    private router: Router,
+    private toast: NgToastService,
+    private userStore: UserStoreService
+  ) { }
+
   ngOnInit(): void {
 
     this.loginForm = this.fb.group({
@@ -36,6 +37,7 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required]
     })
   }
+
 
   hideShowPass() {
     this.isText = !this.isText;
@@ -49,19 +51,19 @@ export class LoginComponent implements OnInit {
       //send object to database or any operation
       this.auth.login(this.loginForm.value)
         .subscribe({
-          next:(res=>{
+          next: (res => {
             this.loginForm.reset();
             this.auth.storeToken(res.accessToken);
-            console.log("login"+res.accessToken);
+            console.log("login" + res.accessToken);
             this.auth.storeRefreshToken(res.refreshToken);
-            const tokenPayload=this.auth.decodedToken();
+            const tokenPayload = this.auth.decodedToken();
             this.userStore.setfullNameForStore(tokenPayload.name);
             this.userStore.setRoleForStore(tokenPayload.role);
-              this.toast.success({detail:"SUCCESS",summary:res.message, duration:5000});
-              this.router.navigate(['dashboard']);
+            this.toast.success({ detail: "SUCCESS", summary: res.message, duration: 5000 });
+            this.router.navigate(['dashboard']);
           }),
-          error:(err=>{
-            this.toast.error({detail:"ERROR",summary:"Something went wrong", duration:5000});
+          error: (err => {
+            this.toast.error({ detail: "ERROR", summary: "Something went wrong", duration: 5000 });
           })
         })
     }

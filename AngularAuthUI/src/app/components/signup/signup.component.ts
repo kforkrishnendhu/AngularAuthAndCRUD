@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import ValidateForm from '../../helpers/validateform';
 import { AuthService } from '../../services/auth.service';
@@ -10,7 +10,7 @@ import { NgToastService } from 'ng-angular-popup';
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [RouterModule,ReactiveFormsModule,CommonModule,HttpClientModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, HttpClientModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
 })
@@ -21,11 +21,11 @@ export class SignupComponent implements OnInit {
   signUpForm!: FormGroup;
 
   constructor(
-    private fb:FormBuilder,
-     private auth :AuthService,
-      private router:Router,
-    private toast:NgToastService
-    ) {}
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private toast: NgToastService
+  ) { }
 
   ngOnInit(): void {
 
@@ -51,20 +51,20 @@ export class SignupComponent implements OnInit {
       //send object to database or any operation
       this.auth.signUp(this.signUpForm.value)
         .subscribe({
-          next:(res=>{
-            this.toast.success({detail:"SUCCESS",summary:res.message, duration:5000});
+          next: (res => {
+            this.toast.success({ detail: "SUCCESS", summary: res.message, duration: 5000 });
             this.signUpForm.reset();
             this.router.navigate(['login']);
           }),
-          error:(err=>{
-            this.toast.error({detail:"ERROR",summary:err.message, duration:5000});
+          error: (err => {
+            this.toast.error({ detail: "ERROR", summary: err.message, duration: 5000 });
           })
         })
     }
     else {
       //throw som eerror using toaster and with required fileds
       ValidateForm.validateAllFormFields(this.signUpForm);
-      this.toast.error({detail:"ERROR",summary:"Your form is invalid", duration:5000});
+      this.toast.error({ detail: "ERROR", summary: "Your form is invalid", duration: 5000 });
     }
   }
 
